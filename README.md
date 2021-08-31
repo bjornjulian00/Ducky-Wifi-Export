@@ -2,7 +2,9 @@
 
 ### Configuration
 Replace `SENDER EMAIL` with the email you wish to send from.
+
 Replace `SENDER PASSWORD` with the password of the sender email.
+
 Replace `RECIPIENT MAIL` with the email you wish to send to.
 
 ### Info
